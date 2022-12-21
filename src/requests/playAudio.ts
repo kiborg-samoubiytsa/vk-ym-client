@@ -14,7 +14,7 @@ interface playAudioParams {
 export const playAudio = async (request: playAudioParams) => {
   const userData = JSON.parse(localStorage.getItem("user-data") || "");
   await axios.post(
-    `http://localhost:3002/play-audio/uid=${userData.uid}/token=${userData.token}`,
+    `http://localhost:3002/api/play-audio/uid=${userData.uid}/token=${userData.token}`,
     request
   );
 };

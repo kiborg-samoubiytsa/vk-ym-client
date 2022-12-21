@@ -8,10 +8,10 @@ export const getQueueFromCollection = async (
 
   const url =
     type == "album"
-      ? `http://localhost:3002/album/with-tracks/id=/${
+      ? `http://localhost:3002/api/album/with-tracks/id=/${
           (collection as Album).id
         }`
-      : `http://localhost:3002/playlists/info/user=${
+      : `http://localhost:3002/api/playlists/info/user=${
           (collection as IPlaylist).owner.login
         }/kind=${(collection as IPlaylist).kind}/username=${
           userData.username

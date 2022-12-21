@@ -13,6 +13,7 @@ const app = express();
 const PORT = 3002;
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname + "/build"));
 const initApi = async ({ username, password, token, uid }) => {
   if (username && password) {
     await api.init({
@@ -36,7 +37,7 @@ const initWrappedApi = async ({ uid, token }) => {
 };
 
 app.get(
-  /\/validate-password\/username=(.+)\/password=(.+)/,
+  /\/api\/validate-password\/username=(.+)\/password=(.+)/,
   async (req, res) => {
     try {
       await initApi({ username: req.params["0"], password: req.params["1"] });
@@ -50,28 +51,40 @@ app.get(
     }
   }
 );
-app.get(/\/rotor\/station=(.+)\/uid=(.+)\/token=(.+)/, async (req, res) => {
+app.get(
+  /\/api\/rotor\/station=(.+)\/uid=(.+)\/token=(.+)/,
+  async (req, res) => {
+    try {
+      const stationType = req.params[0];
+      await initApi({ uid: req.params["1"], token: req.params["2"] });
+      const userToken = api.user.token;
+      console.log(api.user.token);
+      const getRotor = await axios.get(
+        `https://api.music.yandex.net/rotor/station/${stationType}/tracks?settings2=true` /*  "https://api.music.yandex.net/rotor/account/status" */,
+        {
+          headers: {
+            Authorization: `OAuth ${userToken}`,
+          },
+        }
+      );
+      res.json(getRotor.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+app.get("/", (req, res) => {
   try {
-    const stationType = req.params[0];
-    await initApi({ uid: req.params["1"], token: req.params["2"] });
-    const userToken = api.user.token;
-    console.log(api.user.token);
-    const getRotor = await axios.get(
-      `https://api.music.yandex.net/rotor/station/${stationType}/tracks?settings2=true` /*  "https://api.music.yandex.net/rotor/account/status" */,
-      {
-        headers: {
-          Authorization: `OAuth ${userToken}`,
-        },
-      }
-    );
-    res.json(getRotor.data);
+    console.log("121");
+    res.status(200).sendFile(__dirname + "/build/index.html");
   } catch (error) {
     console.log(error);
   }
 });
 
 app.post(
-  /\/rotor\/station=(.+)\/settings\/uid=(.+)\/token=(.+)/,
+  /\/api\/rotor\/station=(.+)\/settings\/uid=(.+)\/token=(.+)/,
   async (req, res) => {
     try {
       const body = req.body;
@@ -99,7 +112,7 @@ app.post(
   }
 );
 
-app.get(/\/track\/similar\/id=(.+)\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/track\/similar\/id=(.+)\/token=(.+)/, async (req, res) => {
   try {
     const { data } = await axios.get(
       `https://api.music.yandex.net/tracks/${req.params[0]}/similar`
@@ -112,7 +125,7 @@ app.get(/\/track\/similar\/id=(.+)\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/user-playlists\/uid=(.+)\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/user-playlists\/uid=(.+)\/token=(.+)/, async (req, res) => {
   try {
     const uid = req.params[0];
     const token = req.params[1];
@@ -135,7 +148,7 @@ app.get(/\/user-playlists\/uid=(.+)\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.post(/\/play-audio\/uid=(.+)\/token=(.+)/, async (req, res) => {
+app.post(/\/api\/play-audio\/uid=(.+)\/token=(.+)/, async (req, res) => {
   try {
     //TODO ПОЧИСТИТЬ КОД ЕПТА
     const clientNow = new Date();
@@ -176,7 +189,7 @@ app.post(/\/play-audio\/uid=(.+)\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/track\/supplement\/id=(.+)\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/track\/supplement\/id=(.+)\/token=(.+)/, async (req, res) => {
   try {
     const trackId = req.params[0];
     const token = req.params[1];
@@ -196,7 +209,7 @@ app.get(/\/track\/supplement\/id=(.+)\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/playlists\/info\/user=(.+)\/kind=(.+)/, async (req, res) => {
+app.get(/\/api\/playlists\/info\/user=(.+)\/kind=(.+)/, async (req, res) => {
   try {
     const result = await wrappedApi.getPlaylist(
       `https://music.yandex.ru/users/${req.params["0"]}/playlists/${req.params["1"]}`
@@ -207,7 +220,7 @@ app.get(/\/playlists\/info\/user=(.+)\/kind=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/album\/with-tracks\/id=(.+)/, async (req, res) => {
+app.get(/\/api\/album\/with-tracks\/id=(.+)/, async (req, res) => {
   try {
     const albumId = req.params[0];
     const { data } = await axios.get(
@@ -219,7 +232,7 @@ app.get(/\/album\/with-tracks\/id=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/rotor\/info\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/rotor\/info\/token=(.+)/, async (req, res) => {
   try {
     const token = req.params[0];
     const { data } = await axios.get(
@@ -237,7 +250,7 @@ app.get(/\/rotor\/info\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.post(/\/rotor\/feedback\/token=(.+)/, async (req, res) => {
+app.post(/\/api\/rotor\/feedback\/token=(.+)/, async (req, res) => {
   try {
     const userToken = req.params[0];
     const now = new Date();
@@ -260,23 +273,26 @@ app.post(/\/rotor\/feedback\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/get-mp3-link\/id=(.+)\/uid=(.+)\/token=(.+)/, async (req, res) => {
-  try {
-    const uid = req.params[1];
-    const token = req.params[2];
-    await initWrappedApi({ uid: uid, token: token });
-    const trackId = req.params[0];
-    const trackInfo = await api.getTrack(parseInt(trackId));
-    const trackUrl = await wrappedApi.getMp3DownloadUrl(parseInt(trackId));
-    res.send({ url: trackUrl, info: trackInfo });
-    res.status(200).end();
-  } catch (e) {
-    console.log(e);
+app.get(
+  /\/api\/get-mp3-link\/id=(.+)\/uid=(.+)\/token=(.+)/,
+  async (req, res) => {
+    try {
+      const uid = req.params[1];
+      const token = req.params[2];
+      await initWrappedApi({ uid: uid, token: token });
+      const trackId = req.params[0];
+      const trackInfo = await api.getTrack(parseInt(trackId));
+      const trackUrl = await wrappedApi.getMp3DownloadUrl(parseInt(trackId));
+      res.send({ url: trackUrl, info: trackInfo });
+      res.status(200).end();
+    } catch (e) {
+      console.log(e);
+    }
   }
-});
+);
 
 app.post(
-  /tracks\/favorite\/add-multiple\/uid=(.+)\/token=(.+)\/track-ids=(.+)/,
+  /\/api\/tracks\/favorite\/add-multiple\/uid=(.+)\/token=(.+)\/track-ids=(.+)/,
   async (req, res) => {
     try {
       const uid = req.params[0];
@@ -302,7 +318,7 @@ app.post(
 );
 
 app.post(
-  /tracks\/favorite\/remove\/uid=(.+)\/token=(.+)\/track-ids=(.+)/,
+  /\/api\/tracks\/favorite\/remove\/uid=(.+)\/token=(.+)\/track-ids=(.+)/,
   async (req, res) => {
     try {
       const uid = req.params[0];
@@ -327,7 +343,7 @@ app.post(
   }
 );
 
-app.get(/\/user-albums\/uid=(.+)\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/user-albums\/uid=(.+)\/token=(.+)/, async (req, res) => {
   try {
     const uid = req.params[0];
     const token = req.params[1];
@@ -348,28 +364,31 @@ app.get(/\/user-albums\/uid=(.+)\/token=(.+)/, async (req, res) => {
   }
 });
 
-app.get(/\/user-albums\/podcasts\/uid=(.+)\/token=(.+)/, async (req, res) => {
-  try {
-    const uid = req.params[0];
-    const token = req.params[1];
-    const { data } = await axios.get(
-      `https://api.music.yandex.net/users/${uid}/likes/albums?rich=true`,
-      { headers: { Authorization: `OAuth ${token}` } }
-    );
-    const filteredAlbums = data.result.filter((e) => {
-      return e.album.metaType == "podcast";
-    });
-    const mappedAlbums = filteredAlbums.map((e) => {
-      return e.album;
-    });
-    console.log(mappedAlbums);
-    res.send(mappedAlbums);
-  } catch (error) {
-    console.log(error);
+app.get(
+  /\/api\/user-albums\/podcasts\/uid=(.+)\/token=(.+)/,
+  async (req, res) => {
+    try {
+      const uid = req.params[0];
+      const token = req.params[1];
+      const { data } = await axios.get(
+        `https://api.music.yandex.net/users/${uid}/likes/albums?rich=true`,
+        { headers: { Authorization: `OAuth ${token}` } }
+      );
+      const filteredAlbums = data.result.filter((e) => {
+        return e.album.metaType == "podcast";
+      });
+      const mappedAlbums = filteredAlbums.map((e) => {
+        return e.album;
+      });
+      console.log(mappedAlbums);
+      res.send(mappedAlbums);
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
+);
 
-app.get(/tracks\/favorite\/uid=(.+)\/token=(.+)/, async (req, res) => {
+app.get(/\/api\/tracks\/favorite\/uid=(.+)\/token=(.+)/, async (req, res) => {
   try {
     const uid = req.params[0];
     const token = req.params[1];

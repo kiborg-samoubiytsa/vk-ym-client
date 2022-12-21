@@ -36,7 +36,7 @@ export const fetchTrackUrl = createAsyncThunk(
 
     const userData = JSON.parse(localStorage.getItem("user-data") || "");
     const { data } = await axios.get(
-      `http://localhost:3002/get-mp3-link/id=${id}/uid=${userData.uid}/token=${userData.token}`
+      `http://localhost:3002/api/get-mp3-link/id=${id}/uid=${userData.uid}/token=${userData.token}`
     );
     console.log(data);
     return { url: data.url, info: data.info[0] };

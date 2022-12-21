@@ -39,8 +39,6 @@ export const CoverPlayButton: FC<Props> = ({
 
   const isPlaying = useSelector(isTrackPlaying);
 
-  const queueType = useSelector(type);
-
   const handlePlaylistPlayStart = async () => {
     if (!isPlayerVisible) {
       dispatch(setPlayerVisible(true));

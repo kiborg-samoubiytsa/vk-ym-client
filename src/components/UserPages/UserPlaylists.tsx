@@ -18,7 +18,7 @@ export const UserPlaylists: FC = () => {
     : [];
   const userData = JSON.parse(localStorage.getItem("user-data") || "");
   const { data, error } = useFetch<IPlaylist[]>(
-    `http://localhost:3002/user-playlists/uid=${userData.uid}/token=${userData.token}`
+    `http://localhost:3002/api/user-playlists/uid=${userData.uid}/token=${userData.token}`
   );
   useEffect(() => {
     if (data != sessionStoragePlaylists && data) {

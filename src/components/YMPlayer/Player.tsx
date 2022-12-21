@@ -62,6 +62,7 @@ interface Props {
   isQueueDisplayed: boolean;
 }
 const Player: FC<Props> = ({ setIsQueueDisplayed, isQueueDisplayed }) => {
+  const dispatch = useDispatch<AppDispatch>();
   //useStates
 
   const [maxDuration, setMaxDuration] = useState<number>(0);
@@ -211,8 +212,6 @@ const Player: FC<Props> = ({ setIsQueueDisplayed, isQueueDisplayed }) => {
       timeRangeRef.current.valueAsNumber = currentDuration;
     }
   }, [currentDuration, isTimeBeingChanged]);
-
-  const dispatch = useDispatch<AppDispatch>();
 
   const handleResumePlaying = async () => {
     dispatch(setIsPlaying(true));

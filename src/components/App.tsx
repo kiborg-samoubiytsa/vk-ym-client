@@ -4,12 +4,7 @@ import "../_global.scss";
 import Player from "./YMPlayer/Player";
 import { Provider } from "react-redux";
 import { store } from "../store/store";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useParams,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { UserPlaylistsPage } from "./pages/UserPlaylistsPage";
 import Header from "./Header/Header";
 import CurrentQueuePage from "./CurrentQueue/CurrentQueue";
@@ -19,7 +14,6 @@ import { UserPodcastsPage } from "./pages/UserPodcastsPage";
 import { PlaylistPage } from "./pages/PlaylistPage/PlaylistPage";
 const App: FC = () => {
   //TODO менять текущий плейлист только по нажатию на трек
-  const { playlistId } = useParams();
   const [isQueueDisplayed, setIsQueueDisplayed] = useState(false);
   return (
     <>

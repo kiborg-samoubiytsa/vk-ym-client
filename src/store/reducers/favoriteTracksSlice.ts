@@ -17,7 +17,7 @@ export const fetchFavoriteTracks = createAsyncThunk(
   async () => {
     const userData = JSON.parse(localStorage.getItem("user-data") || "");
     const { data } = await axios.get(
-      `http://localhost:3002/tracks/favorite/uid=${userData.uid}/token=${userData.token}`
+      `http://localhost:3002/api/tracks/favorite/uid=${userData.uid}/token=${userData.token}`
     );
     return data;
   }

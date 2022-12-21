@@ -10,7 +10,7 @@ export const sendRotorFeedBack = async (
   const userData = JSON.parse(localStorage.getItem("user-data") || "");
   if ((type == "trackStarted" || type == "like") && track) {
     await axios.post(
-      `http://localhost:3002/rotor/feedback/token=${userData.token}`,
+      `http://localhost:3002/api/rotor/feedback/token=${userData.token}`,
       {
         trackId: track,
         type: type,
@@ -20,7 +20,7 @@ export const sendRotorFeedBack = async (
   }
   if ((type == "skip" || type == "trackFinished") && track) {
     await axios.post(
-      `http://localhost:3002/rotor/feedback/token=${userData.token}`,
+      `http://localhost:3002/api/rotor/feedback/token=${userData.token}`,
       {
         trackId: track,
         type: type,
@@ -31,7 +31,7 @@ export const sendRotorFeedBack = async (
   }
   if (type == "radioStarted") {
     await axios.post(
-      `http://localhost:3002/rotor/feedback/token=${userData.token}`,
+      `http://localhost:3002/api/rotor/feedback/token=${userData.token}`,
       {
         type: type,
         from: from,

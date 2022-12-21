@@ -16,7 +16,6 @@ import {
   isTrackPlaying as isPlaying,
   trackId,
 } from "../../store/reducers/currentTrackSlice";
-import { favoriteTrackIds } from "../../store/reducers/favoriteTracksSlice";
 
 interface Props {
   id: number | string;

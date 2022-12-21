@@ -35,7 +35,7 @@ export const fetchPlaylist = createAsyncThunk(
   async ({ user, kind }: any): Promise<IPlaylist> => {
     console.log(user, kind);
     const { data } = await axios.get(
-      `http://localhost:3002/playlists/info/user=${user}/kind=${kind}/`
+      `http://localhost:3002/api/playlists/info/user=${user}/kind=${kind}/`
     );
     console.log(data);
     return data;
@@ -45,7 +45,7 @@ export const fetchAlbum = createAsyncThunk(
   "collection/fetchAlbum",
   async ({ albumId }: any): Promise<AlbumWithTracks> => {
     const { data } = await axios.get(
-      `http://localhost:3002/album/with-tracks/id=${albumId}`
+      `http://localhost:3002/api/album/with-tracks/id=${albumId}`
     );
     return data;
   }
@@ -62,10 +62,10 @@ export const fetchTrackInfo = createAsyncThunk(
   }> => {
     const userData = JSON.parse(localStorage.getItem("user-data") || "");
     const { data: trackSupplement } = await axios.get(
-      `http://localhost:3002/track/supplement/id=${trackId}/token=${userData.token}`
+      `http://localhost:3002/api/track/supplement/id=${trackId}/token=${userData.token}`
     );
     const { data: similarTracks } = await axios.get(
-      `http://localhost:3002/track/similar/id=${trackId}/token=${userData.token}`
+      `http://localhost:3002/api/track/similar/id=${trackId}/token=${userData.token}`
     );
     console.log(trackSupplement.lyrics, similarTracks);
     return { supplement: trackSupplement, similar: similarTracks };

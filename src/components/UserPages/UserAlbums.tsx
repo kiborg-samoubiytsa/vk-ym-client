@@ -18,7 +18,7 @@ export const UserAlbums: FC = () => {
     ? JSON.parse(sessionStorage.getItem("user-albums") || "")
     : [];
   const { data, error } = useFetch<Album[]>(
-    `http://localhost:3002/user-albums/uid=${userData.uid}/token=${userData.token}`
+    `http://localhost:3002/api/user-albums/uid=${userData.uid}/token=${userData.token}`
   );
   useEffect(() => {
     if (favoriteTracks.length == 0) {
