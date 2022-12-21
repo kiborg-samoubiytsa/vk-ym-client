@@ -34,7 +34,7 @@ export const PlaylistPage = () => {
     error,
     state,
   } = useFetch<IPlaylist>(
-    `http://localhost:3002/playlists/info/user=${userId}/kind=${playlistKind}/`
+    `http://localhost:3002/api/playlists/info/user=${userId}/kind=${playlistKind}/`
   );
   useEffect(() => {
     if (favoriteTracks.length == 0) {
